@@ -80,9 +80,26 @@ for k = 1:num_labels,
 end
 J /= m;
 
+regularization = lambda*(Theta1(:,2:end)(:)'*Theta1(:,2:end)(:)+Theta2(:,2:end)(:)'*Theta2(:,2:end)(:))/(2*m);
+J += regularization;
 
+% Part 2
+for i = 1:m,
+	a_1 = [1; X(i,:)']; % 401x1
+	a_2 = sigmoid(Theta1*a_1); % 25x1
+	a_2 = [1; a_2]; % 26x1
+	a_3 = sigmoid(Theta2*a_2); % 10x1
+	y_3 = zeros(num_labels, 1); % 10x1
+	y_3(y(i)) = 1;
 
+	delta3 = a_3 - y_3; % 10x1
+	delta2 = Theta2(:,2:end)'*delta3.*sigmoidGradient(a_2(2:end,:)); % 25x1
 
+	Theta1_grad = Theta1_grad + delta2*a_1';
+	Theta2_grad = Theta2_grad + delta3*a_2';
+end
+Theta1_grad = Theta1_grad ./ m;
+Theta2_grad = Theta2_grad ./ m;
 
 % -------------------------------------------------------------
 
